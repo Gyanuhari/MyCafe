@@ -1,0 +1,321 @@
+﻿@model MyCafe.Models.CartViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Summary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form method="post">
+    <div class="backgroundWhite border" style="background-color:rgba(243, 246, 248, 0.90)">
+        @{double total = 0;
+            int couponCount = 0; }
+        @if (Model.CartMenuList.Count > 0)
+        {
+            <div class="card">
+                <div class="card-header bg-dark">
+                    <div class="row">
+                        <div class="col-md-6 text-white"><i class="fas fa-shopping-cart">&nbsp; Order Summary</i></div>
+                        <div class="col-12 col-md-4 offset-md-2">
+                            <a class="btn btn-outline-info form-control" asp-controller="Carts" asp-action="Index">Back To Cart</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h4 class="text-info">PickUp Details</h4>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.Name"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.Name" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.Phone"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.Phone" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.Email"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.Email" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.Address"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.Address" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.Address" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.City"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.City" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.City" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.ZipCode"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.ZipCode" class="form-control" />
+                                    <span asp-validation-for="@Model.OrderHeader.ZipCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.OrderDate"></label>
+                                </div>
+                                <div class="col-7">
+                                    <input asp-for="@Model.OrderHeader.PickupTime" type="text" value="" id="orderTime"
+                                           class="form-control" placeholder="Current Time: @DateTime.Now.ToShortTimeString()" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 text-right">
+                                    <label asp-for="@Model.OrderHeader.Comments"></label>
+                                </div>
+                                <div class="col-7">
+                                    <textarea rows="3" asp-for="@Model.OrderHeader.Comments" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h4 class="text-info">Order Summary</h4>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    @foreach (var item in Model.CartMenuList)
+                                    {
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h5 class="text-primary">@item.MenuItem.Name</h5>
+                                                Quantity: @item.MenuCount
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                $@(item.MenuCount * item.MenuItem.Price)
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        total += item.MenuCount * item.MenuItem.Price;
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row justify-content-between px-3">
+                                        <span class="text-info">SubTotal(AUD)</span>
+                                        <div>$<span id="subTotal">@total</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.CouponsList.Count > 0)
+                            {
+                                <br />
+                                <div>
+                                    @foreach (var coupon in Model.CouponsList)
+                                    {
+
+                                        <ul class="list-group">
+                                            @if (coupon.MinimumAmount < total)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong class="text-primary">Coupon Code:</strong><strong> @coupon.Name</strong>
+                                                    @if (Convert.ToInt32(coupon.CouponType) == 0)
+                                                    {
+                                                        <span class="badge badge-primary badge-pill">@coupon.Discount%</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-primary badge-pill">$@coupon.Discount</span>
+                                                    }
+                                                </li>
+                                                { couponCount += 1; }
+                                            }
+                                        </ul>
+
+                                    }
+                                </div>
+                            }
+                            <br />
+                            @if (couponCount > 0)
+                            {
+                                <div class="form-group row">
+                                    <div class="col-6">
+                                        <input class="form-control" id="textCoupon" placeholder="Enter Coupon Code" />
+                                        @*Becoz the above input is disabled when ajax is successfull*@
+                                        <input asp-for="OrderHeader.CouponCode" id="appliedCoupon" type="hidden" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="button" value="Apply Coupon" id="btnCoupon" class="btn btn-success btn btn-square form-control" />
+                                        <a asp-action="Summary" asp-controller="Carts" id="btnRemoveCoupon" style="display:none;" class="btn btn-primary form-control">Remove Coupon</a>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row d-flex justify-content-between">
+                                <div class="col-6">
+                                    <strong>Total Amount(AUD):</strong>
+                                </div>
+                                <div class="col-6 text-right text-success pr-4">
+                                    <input asp-for="OrderHeader.OrderTotal" id="orderTotal" type="hidden" />
+                                    <strong>$<span type id="orderTotalAfterCoupon">@total</span></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-md-8 text-left">
+                            <label id="lblMsg" class="text-danger" style="display:none">Cafe is already closed for today....</label>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <button class="btn btn-success btn-square form-control" type="submit" id="placeOrder" asp-controller="Carts" asp-action="PlaceOrder">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="backgroundWhite">
+                <h4 class="text-info">No items added in the cart.</h4>
+            </div>
+        }
+    </div>
+</form>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <scripts src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.js"></scripts>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var currentDt = new Date();
+            var startTime = "";
+
+            //console.log(currentDt.toString());
+            //Resturant Opens At 12:00 PM
+            if (currentDt.getHours() < 11) {
+                startTime = '12:00 PM';
+            }
+            else {
+                if (currentDt.getMinutes() < 30) {
+                    startTime = (currentDt.getHours() + 1).toString() + ':30 PM';
+                }
+                else {
+                    startTime = (currentDt.getHours() + 2).toString() + ':00 PM';
+                }
+            }
+
+            if (currentDt.getHours() > 20) {
+                //No Order After 9:00 PM
+                $('#orderTime').prop('disabled', true);
+                $('#placeOrder').prop('disabled', true);
+                $('#lblMsg').show();
+            }
+
+            $('#orderTime').timepicker({
+                minTime: startTime,
+                maxTime: '10:00 PM'
+            });
+
+            //Assigning subTotal to Model.OrderHeader.OrderTotal
+            var subTotal = document.getElementById('subTotal').innerText;
+            $("#orderTotal").val(subTotal);
+        });
+
+        $('#btnCoupon').click(function () {
+            var couponCode = document.getElementById('textCoupon').value;
+            var subTotal = document.getElementById('subTotal').innerText;   //Becoz of span
+            //console.log({ 'coupon': couponCode, 'myTotal': subTotal });
+
+            $.ajax({
+                url: '/API/CouponAPI?orderTotal=' + subTotal + '&couponCode=' + couponCode,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data, textStatus, xhr) {
+                    var splitData = data.split(':');
+                    console.log({ 'data': splitData[0] });
+                    if (splitData[1] == 'Error') {
+                        //Error
+                        //alert('Coupon is invalid or did not meet the criteria.');
+                        toastr.error('Coupon is invalid or did not meet the criteria.', 'Error').css('width', '800px');
+                    }
+                    else {
+                        //Success
+                        //$('#orderTotalAfterCoupon').attr('value', Math.round(splitData[0] * 100) / 100);  //This does not worked for span.
+                        var totalAmount = Math.round(splitData[0] * 100) / 100; //Syntax: Math.round(x)
+                        $("#orderTotalAfterCoupon").text(totalAmount);
+                        $("#orderTotal").val(totalAmount);
+                        $("#appliedCoupon").val(couponCode);
+
+                        //document.getElementById('textCoupon').readOnly - true;
+                        //document.getElementById('btnCoupon').style.display - 'none';
+                        //document.getElementById('btnRemoveCoupon').style.display - '';
+
+                        $('#textCoupon').prop('disabled', true);
+                        $('#btnCoupon').remove();
+                        $('#btnRemoveCoupon').show();
+                    }
+                }
+            })
+        });
+
+
+        toastr.options = {
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true
+            //"closeButton": false,
+            //"debug": false,
+            //"newestOnTop": false,
+            //"progressBar": true,
+            //"positionClass": "toast-top-center",
+            //"onclick": null,
+            //"showDuration": "100",
+            //"hideDuration": "1000",
+            //"timeOut": "5000",
+            //"extendedTimeOut": "1000",
+            //"showEasing": "swing",
+            //"hideEasing": "linear",
+            //"showMethod": "show",
+            //"hideMethod": "hide"
+        }
+    </script>
+}
+
+
+
+@*Notes: For working with dates
+        $(function () {
+        $("#orderDateTime").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+    });
+    //For displaying today' date
+    var dT = new Date();
+    //dT.setHours(18);
+    $("#orderDateTime").val($.datepicker.formatDate('dd/mm/yy', dT));
+    //$('#orderDate').datetimepicker();*@

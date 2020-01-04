@@ -1,0 +1,258 @@
+﻿@model MyCafe.Models.OrderViewModels.OrderListVM
+@{
+    ViewData["Title"] = "OrderPickup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <form method="post">
+        <div class="border mb-1 mx-n3">
+            <div class="row m-2">
+                <div class="col-3">
+                    @Html.Editor("searchId", new { htmlAttributes = new { @class = "form-control", @id = "orderId", @placeholder = "Order Id" } })
+                </div>
+                <div class="col-3">
+                    @Html.Editor("searchEmail", new { htmlAttributes = new { @class = "form-control", @id = "emailId", @placeholder = "Email", @value = "reset" } })
+                </div>
+                <div class="col-3">
+                    @Html.Editor("searchDate", new { htmlAttributes = new { @class = "form-control", @id = "dateId", @placeholder = "Order Date" } })
+                </div>
+                <div class="col-3">
+                    <button asp-action="Index" type="submit" class="btn-primary form-control"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        @if (Model.OrderHeadersList.Count > 0)
+        {
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr class="table-primary">
+                        <th>Id</th>
+                        <th>Pickup Name</th>
+                        <th>Phone</th>
+                        <th>Order Email</th>
+                        <th>Order Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderHeadersList)
+                    {
+                        //var pickupTime = item.PickupTime.ToShortTimeString();
+                        var orderDate = item.OrderDate.ToShortDateString();
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                            <td>@orderDate</td>
+                            <td>
+                                @*Using API to get data in json and display in modal*@
+                                <a class="btn btn-success form-control" onclick="getOrderDetails(@item.Id)" href="#"><i class="far fa-list-alt"></i>&nbsp;Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="col-12 py-lg-2">
+                <h4 class="text-primary">No any order item for picked up...</h4>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div paging-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true" page-class="page-link btn-lg border"
+                 page-class-selected="btn-primary active" page-class-normal="btn-default" class="pagination float-right p-1" style="background-color:powderblue"></div>
+        </div>
+    </div>
+</div>
+
+@*Modal for details*@
+<div id="order-detail-modal" class="modal fade" role="dialog" style="top:100px;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:auto;">
+            <div class="modal-header" style="background-color:#008cba;">
+                <h4 class="text-white"><strong>Details of Order</strong></h4>
+                <button type="button" class="close text-danger" data-dismiss="modal" area-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                @*Get Details By JavaScripts*@
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-success text-white col-3" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="~/js/Typeahead.js"></script>
+    <script>
+        //#region for searching
+        $(document).ready(function () {
+            //For Id Search
+            var idSrc = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/API/UserAPI?type=id&query=%IDQUERY',
+                    wildcard: '%IDQUERY'
+                }
+            });
+
+            $('#orderId').typeahead({ highlight: true, minLength: 3 }, {
+                display: 'id',
+                source: idSrc
+            });
+
+            //For Email Search
+            var emailSrc = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/API/UserAPI?type=email&query=%EMAILQUERY',
+                    wildcard: '%EMAILQUERY'
+                }
+            });
+
+            $('#emailId').typeahead({ highlight: true, minLength: 3 }, {
+                display: 'email',
+                source: emailSrc
+            });
+
+            //For Date Search
+            var dateSrc = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/API/UserAPI?type=date&query=%DATEQUERY',
+                    wildcard: '%DATEQUERY'
+                }
+            });
+
+            $('#dateId').typeahead({ highlight: true, minLength: 3 }, {
+                display: 'date',
+                source: dateSrc
+            });
+        });
+        //#endregion for searching
+
+        //#region for details modal
+        //API Url
+        var getOrderDetailByIdUrl = '/Orders/OrderDetailById';
+
+        //Detail SubCategory Modal
+        var orderDetailModal = $('#order-detail-modal');
+
+        function getOrderDetails(id) {
+            var isOk = false;
+            var response = "";
+            var error = null;
+            //Clears previous data
+            $("#modal-body").empty();
+
+            $.ajax({
+                url: getOrderDetailByIdUrl,
+                type: 'GET',
+                data: { orderId: id },
+                cache: false,
+                contentType: 'application/json; charset=UTF-8',
+                dataType: 'json'
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        //console.info(response);
+                        orderDetailModal.modal({ backdrop: 'static', keyboard: false });
+
+                        //Looping and assigning the values of order details in bootstrap body
+                        $("<div class='row'><div class='col-12'><h4 class='text-primary'><span class='badge badge-primary'>Order Id:" + " " + response.orderHeader.id + "</span></h4></div></div>").appendTo("#modal-body");
+                        var row = $("<div class='row'></div>").appendTo("#modal-body");
+                        var itemColumn = $("<div class='col-5 pr-0'><h4 class='text-primary'><strong>Items Ordered</strong></h4></div>").appendTo(row);
+
+                        $.each(response.orderDetails, function (i, item) {
+                            $("<div class='col-12 pr-0 text-primary'><ul class='pl-0'><li><h6>" + item.menuName + " <strong>X</strong> " + item.menuCount + "</h6></li></ul></div > ").appendTo(itemColumn);
+                        });
+                        var orderColumn = $("<div class='col-7'><h4 class='text-primary'><strong>Pickup Details</strong></h4></div>").appendTo(row);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Pickup Name:</strong> " + response.orderHeader.name + "</h6></div > ").appendTo(orderColumn);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Pickup Phone:</strong> " + response.orderHeader.phone + "</h6></div > ").appendTo(orderColumn);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Order Date:</strong> " + getOrderDate(response.orderHeader.orderDate) + "</h6></div > ").appendTo(orderColumn);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Coupon Code:</strong> " + response.orderHeader.couponCode + "</h6></div > ").appendTo(orderColumn);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Order Status:</strong> " + response.orderHeader.status + "</h6></div > ").appendTo(orderColumn);
+                        $("<div class='col-12 pl-0 text-primary'><h6><strong>Order Total:</strong> $" + response.orderHeader.orderTotal + "</h6></div > ").appendTo(orderColumn);
+                    }
+                    else {
+                        toastr.error('Error: Getting Order Details Failed!!!');
+                        console.error('Error Message:' + error);
+                    }
+                });
+        }
+        //Get order date & time
+        function getOrderDate(orderDate) {
+            var ordDate = new Date(orderDate);
+            var ordDay = ordDate.getDate();
+            var ordMth = ordDate.getMonth();
+            var ordYear = ordDate.getFullYear();
+            var ordHr = ordDate.getHours();
+            var ordMin = ordDate.getMinutes();
+            var ampm = "";
+
+            //var ampm = ordHr < 12 ? AM : PM;
+            //console.info(ampm);
+            if (ordHr < 12) {
+                ampm = "AM";
+            }
+            else {
+                ordHr = ordHr - 12;
+                ampm = "PM";
+            }
+            return ordDay + "/" + ordMth + "/" + ordYear + "  " + ordHr + ":" + ordMin + " " + ampm;
+        }
+
+        //#endregion for details modal
+    </script>
+
+
+
+
+
+    @*For Detail-Modal
+        <script type="text/javascript">
+            //API for GET Order Detail
+            var orderDetailUrl = '/Orders/Detail';
+
+            //Order Details Stuffs
+
+
+            function Details(orderId) {
+
+
+
+                $.ajax({ url: orderDetailUrl, type: 'GET' })
+                    .done(function (res) {
+
+                    })
+                    .fail(function (err) {
+
+                    })
+                    .always(function () {
+
+                    })
+
+                $("#orderDetail").modal({ backdrop: 'static', keyboard: false });
+                //alert('Id:'+orderId);
+            }
+        </script>*@
+}

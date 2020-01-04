@@ -1,0 +1,59 @@
+﻿@model MyCafe.Models.Category
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="backgroundWhite border">
+    <form method="post" asp-action="Edit">
+        <div class="row">
+            <div class="col-6 offset-md-3 text-info">
+                <h4><strong>Edit:</strong>&nbsp;@Model.Name</h4>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="col-12 text-danger"></div>
+        </div>
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="Name"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="DisplayOrder"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="DisplayOrder" class="form-control" />
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="CreatedAt"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="CreatedAt" class="form-control" disabled />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-6 col-md-3 offset-md-3">
+                <input type="submit" value="Update" class="btn btn-square btn-lg btn-warning form-control" />
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-success btn-square btn-lg form-control" asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

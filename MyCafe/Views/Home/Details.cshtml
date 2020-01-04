@@ -1,0 +1,80 @@
+﻿@model MyCafe.Models.CartMenuItem
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using MyCafe.Utility
+@using MyCafe.Extensions
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="container backgroundWhite">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="text-primary d-flex justify-content-between"><span><strong>@Model.MenuItem.Name</strong></span><span class="badge badge-primary">Price Per Serve:&nbsp;$@Model.MenuItem.Price</span></h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group row justify-content-between">
+                        <div>
+                            <h4>
+                                <span class="badge badge-primary"><strong>@Model.MenuItem.SubCategory.Name</strong></span>
+                            </h4>
+                        </div>
+                        <div>
+                            <h4>
+                                @if (Convert.ToInt32(Model.MenuItem.Spicyness) == 1)
+                                {
+                                    <label class="badge badge-pill badge-danger">Little Spicy</label>
+                                }
+                                @if (Convert.ToInt32(Model.MenuItem.Spicyness) == 2)
+                                {
+                                    <label class="badge badge-pill badge-danger">Very Spicy</label>
+                                }
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <p>@Model.MenuItem.Description</p>
+                    </div>
+                </div>
+                <div class="col-5 offset-1">
+                    <img src="@Model.MenuItem.Image" style="width:100%" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="form-group row">
+                <div class="col-6">
+                    <a asp-action="Index" class="btn btn-success btn-square btn-lg form-control">To Menu Items</a>
+                </div>
+                @{
+                    var cartEnabled = true;
+                    if (HttpContextAccessor.HttpContext.Session.GetObject<List<int>>(SD.SessionCart) != null)
+                    {
+                        var sessionList = HttpContextAccessor.HttpContext.Session.GetObject<List<int>>(SD.SessionCart);
+                        if (sessionList.Contains(Model.MenuItemId))
+                        {
+                            cartEnabled = false;
+                        }
+                    }
+                    if (cartEnabled)
+                    {
+                        <div class="col-6">
+                            <a asp-action="AddToCart" asp-route-menuId="@Model.MenuItemId" class="btn btn-primary btn-square btn-lg form-control">Add To Cart</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-6">
+                            <a asp-action="AddToCart" asp-route-menuId="@Model.MenuItemId" class="btn btn-primary btn-square btn-lg form-control disabled">Item Already Added</a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,119 @@
+﻿@model MyCafe.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border row">
+    <div class="col-12 text-center">
+        <h4 class="text-primary"><strong>Edit User</strong></h4>
+    </div>
+    <div class="col-12 col-md-8 offset-md-1">
+        <form method="post" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="FirstName" type="hidden" />
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="FirstName"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="FirstName" class="form-control" disabled />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <input asp-for="LastName" type="hidden" />
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="LastName"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="LastName" class="form-control" disabled />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <input asp-for="Email" type="hidden" />
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="Email"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Email" class="form-control" disabled />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <input asp-for="PhoneNumber" type="hidden" />
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="PhoneNumber"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="PhoneNumber " class="form-control" disabled />
+                    <span asp-validation-for="PhoneNumber " class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="LockoutEnd"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="LockoutEnd" id="lockoutEnd" type="datetime" class="form-control" />
+                    <span asp-validation-for="LockoutEnd" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="LockoutReason"></label>
+                </div>
+                <div class="col-8">
+                    <textarea asp-for="LockoutReason" rows="5" class="form-control"></textarea>
+                    <span asp-validation-for="LockoutReason" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4 text-right">
+                    <label asp-for="AccessFailedCount"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="AccessFailedCount" class="form-control" />
+                    <span asp-validation-for="AccessFailedCount" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-6">
+                    <input type="submit" value="Update" asp-route-id="@Model.Id" class="btn btn-warning btn-square btn-lg form-control" />
+                </div>
+                <div class="col-6">
+                    <a asp-action="Index" class="btn btn-success btn-square btn-lg form-control">To Users</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("#lockoutEnd").datepicker({
+                dateFormat: 'dd/mm/yy'
+                //Setting previous date means user is not locked.
+            });
+        });
+
+        $("#lockoutEnd").val($.datepicker.formatDate('DD dd M, yy', new Date($("#lockoutEnd").val()))); //For displaying in textbox
+        $('#lockoutEnd').datetimepicker();
+
+    </script>
+}
+
+
+@*Useful:
+    @if (Model.HasValue)
+    {
+        // This'll get you a fairly American date format
+        @Convert.ToDateTime(Model).ToString("MM/dd/yyyy}")
+    }*@

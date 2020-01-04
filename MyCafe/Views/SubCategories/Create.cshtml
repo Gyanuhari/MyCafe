@@ -1,0 +1,103 @@
+﻿@model MyCafe.Models.CategoryAndSubCategoryViewModels.CategoryAndSubCategoryVM
+@using MyCafe.Extensions
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <p>
+            @await Html.PartialAsync("_StatusMessage", Model.StatusMessage)
+        </p>
+    </div>
+</div>
+<div class="backgroundWhite border">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-acttion active"><h5>Existing Sub-Categories</h5></div>
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        <div class="list-group-item list-group-item-acttion"><strong>@Model.SubCategoryList[i]</strong></div>
+                    }
+                </div>
+                <a href="#" class="btn btn-success btn-square form-control" onclick="displayExistingSubCategory()">More SubCategory</a>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group row">
+                    <div class="col-12 offset-2">
+                        <h4 class="text-primary"><strong>Create Sub-Category</strong></h4>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="SubCategory.Name"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="SubCategory.Name" class="form-control" />
+                        <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="SubCategory.CategoryId"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="SubCategory.CategoryId"
+                                asp-items="Model.CategoryList.ToSelectListItem(Model.SubCategory.Id)" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="IsNew"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="IsNew" style="height:25px; width:25px;" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-6 ">
+                        <input type="submit" class="btn btn-primary btn-lg btn-square form-control" />
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-success btn-square btn-lg form-control">Back To SubCategories</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*Modal for displaying existing subcategories*@
+<div id="display-subCategory" class="modal fade" role="dialog" style="top:50px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#008cba;">
+                <div class="modal-title text-white"><strong>Existing SubCategory</strong></div>
+                <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                @foreach (var item in Model.SubCategoryList)
+                {
+                    <div class="list-group-item list-group-item-acttion"><strong>@item</strong></div>
+                }
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-success btn-square" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{ 
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        function displayExistingSubCategory() {
+            $('#display-subCategory').modal({ backdrop: 'static', keyboard: false });
+        }
+    </script>
+}

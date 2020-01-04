@@ -1,0 +1,365 @@
+﻿@model IEnumerable<MyCafe.Models.SubCategory>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <div class="row">
+        <div class="col-6">
+            <h4 class="text-primary"><strong>List of SubCategories</strong></h4>
+        </div>
+        <div class="col-6 text-right mb-2">
+            @Html.Partial("_CreateNewPartial")
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr class="table-primary">
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Category.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Category.DisplayOrder)
+                </th>
+                <th class="text-center"> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.DisplayOrder)
+                    </td>
+                    <td class="text-center">
+                        @*@Html.Partial("_TableButtonPartial", item.Id)*@
+                        <a href="#" class="btn btn-primary btn btn-square" onclick="getEditSubCategory(@item.Id)"><i class="far fa-edit"></i>&nbsp;Edit</a>
+                        <a href="#" class="btn btn-success btn btn-square" onclick="detailOfSubCategory(@item.Id)"><i class="far fa-list-alt"></i>&nbsp;Details</a>
+                        <a href="#" class="btn btn-danger btn btn-square" onclick="getDeleteModal(@item.Id)"><i class="far fa-trash-alt"></i>&nbsp;Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@*Modal For Editing SubCategory*@
+<div id="edit-subCategory-modal" class="modal fade" role="dialog" style="top:100px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#008cba;">
+                <h4 class="modal-title text-white"><strong>Edit SubCategory</strong></h4>
+                <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="edit-subCategory-validation-summary" class="text-danger"></div>
+                <form>
+                    <input id="edit-subCategory-id" type="hidden" />
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label for="edit-subCategory-name">SubCategory Name</label>
+                        </div>
+                        <div class="col-8">
+                            <input id="edit-subCategory-name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label for="edit-category-name-ddl">Category Name</label>
+                        </div>
+                        <div class="col-8">
+                            <select class="form-control" id="edit-category-name-ddl">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-6">
+                    <a href="#" class="btn btn-success btn-square form-control" data-dismiss="modal">No</a>
+                </div>
+                <div class="col-6">
+                    <a href="#" class="btn btn-warning btn-square form-control" onclick="saveEditSubCategory()">&nbsp;Update</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal For Displaying The Details Of SubCategory*@
+<div id="detail-subCategory-modal" class="modal fade" role="dialog" style="top:100px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#008cba;">
+                <h4 class="modal-title text-white"><strong>Detals of SubCategory</strong></h4>
+                <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                @*<input id="detail-subCategory-id" type="hidden" />*@
+                <fieldset disabled>
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label for="detail-subCategory-name" class="text-right">SubCategory Name</label>
+                        </div>
+                        <div class="col-8">
+                            <input id="detail-subCategory-name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4">
+                            <label for="detail-category-name" class="text-right">Category Name</label>
+                        </div>
+                        <div class="col-8">
+                            <input id="detail-category-name" class="form-control" />
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <div class="col-4 offset-8">
+                    <a href="#" class="btn btn-success btn-square form-control" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal For Deleting The SubCategory*@
+<div id="delete-subCategory-modal" class="modal fade" role="dialog" style="top:100px;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:auto;">
+            <div class="modal-header" style="background-color:#008cba;">
+                <h4 class="modal-title text-white"><strong>Delete Confirmation</strong></h4>
+                <button type="button" class="close text-danger" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h5 class="text-danger">Are you sure, you want to delete this SubCategory???</h5>
+            </div>
+            <div class="modal-footer">
+                <div class="col-4 offset-4">
+                    <a href="#" class="btn btn-success btn-square form-control" data-dismiss="modal">No</a>
+                </div>
+                <div class="col-4">
+                    <a href="#" class="btn btn-danger btn-square form-control" onclick="getDeleteSubCategory()">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"> //Jquery didn't work because of two jquey link so commented this one.</script>*@
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script>
+        //API Url
+        var getEditSubCategoryByIdUrl = '/SubCategories/GetSubCategoryById';
+        var saveEditSubCategoryUrl = '/SubCategories/SaveEditSubCategory';
+        var getDetailSubCategoryUrl = '/SubCategories/GetDetailSubCategory';
+        var deleteSubCategoryUrl = '/SubCategories/DeleteSubCategory';
+
+        //Edit SubCategory Stuff
+        var editSubCategoryModal = $('#edit-subCategory-modal');
+        var editSubCategoryNameEle = $('#edit-subCategory-name');
+        var categoryNameDdlEle = $('#edit-category-name-ddl');
+
+        //Detail SubCategory Stuff
+        var detailSubCategoryModal = $('#detail-subCategory-modal');
+        var detailSubCategoryNameEle = $('#detail-subCategory-name');
+        var detailSubCategoryCategoyNameEle = $('#detail-category-name');
+
+        //Delete SubCategory Stuff
+        var deleteSubCategoryModal = $('#delete-subCategory-modal');
+
+        //General Stuff
+        var editSubCategoryJson = null;
+        var detailSubCategoryJson = null;
+        var deleteSubCategoryId = null;
+
+
+        //#region edit SubCategory modal
+        //Get SubCategory and Category dropdown for editing
+        function getEditSubCategory(id) {
+            var isOk = false;
+            var response = null;
+            var error = null;
+            //Avoids repeatation in dropdown/clears dropdown
+            categoryNameDdlEle.empty();
+
+            $.ajax({
+                url: getEditSubCategoryByIdUrl,
+                type: 'GET',
+                data: { subCategoryId: id },  //Creating object and sending id
+                cache: 'false',
+                contentType: 'application/json; charset=UTF-8',  //types of data we are sending
+                datatype: 'json'                                //types of data we are expecting
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        editSubCategoryJson = response;
+                        //console.info(editSubCategoryJson);
+                        editSubCategoryModal.modal({ backdrop: 'static', keyboard: false });
+                        editSubCategoryNameEle.val(editSubCategoryJson.subCategory.name);
+                        var categoryList = editSubCategoryJson.categoryList;
+                        //For CategoryList Dropdown
+                        $.each(categoryList, function (i, item) {
+                            categoryNameDdlEle.append($('<option>', {
+                                value: item.id,
+                                text: item.name
+                            }));
+                        });
+                    }
+                    else {
+                        toastr.error('Error:' + error);
+                    }
+                });
+        }
+
+        //Save Edited SubCategory and Category
+        function saveEditSubCategory() {
+            var isOk = false;
+            var response = null;
+            var error = null;
+            //Assigning values
+            editSubCategoryJson.subCategory.name = editSubCategoryNameEle.val();
+            editSubCategoryJson.subCategory.categoryId = categoryNameDdlEle.val();
+            //console.info(editSubCategoryJson);
+
+            $.ajax({
+                url: saveEditSubCategoryUrl,
+                type: 'POST',
+                data: JSON.stringify(editSubCategoryJson),  //Object is there already, we just assigning and sending it
+                cache: 'false',
+                contentType: 'application/json; charset=UTF-8',  //types of data we are sending
+                dataType: 'json'
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        //console.info(response);
+                        editSubCategoryModal.modal('hide');
+                        toastr.success('SubCategory Updated Successfully!');
+                        location.reload();
+                    }
+                    else {
+                        toastr.error('Error: SubCategory Update Failed!');
+                        console.error('Error Message:' + error);
+                    }
+                });
+        }
+        //#endregion edit SubCategory
+
+
+        //#region get details of SubCategory
+        function detailOfSubCategory(id) {
+            var isOk = false;
+            var response = null;
+            var error = null;
+
+            $.ajax({
+                url: getDetailSubCategoryUrl,
+                type: 'GET',
+                data: { subCategoryId: id },
+                cache: 'false',
+                contentType: 'application/json; charset=UTF-8',  //types of data we are sending
+                datatype: 'json'                                //types of data we are expecting
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        detailSubCategoryJson = response;
+                        //console.info(detailSubCategoryJson);
+                        detailSubCategoryModal.modal({ backdrop: 'static', keyboard: false });
+                        detailSubCategoryNameEle.val(detailSubCategoryJson.subCategory.name);
+                        detailSubCategoryCategoyNameEle.val(detailSubCategoryJson.subCategory.category.name);
+                    }
+                    else {
+                        toastr.error('Error: Details of SubCategory Failed!');
+                        console.error('Error' + error);
+                    }
+                });
+        }
+        //#endregion details of SubCategory
+
+        //#region delete SubCategory
+        function getDeleteModal(id) {
+            if (id != null) {
+                deleteSubCategoryModal.modal({ backdrop: 'static', keyboard: false });
+                deleteSubCategoryId = id;
+            }
+            else {
+                toastr.error('Error: Deleting SubCategory!');
+            }
+        }
+
+        function getDeleteSubCategory() {
+            var isOk = false;
+            var response = null;
+            var error = null;
+
+            $.ajax({
+                url: deleteSubCategoryUrl,
+                type: 'GET',
+                data: { subCategoryId: deleteSubCategoryId },
+                contentType: 'application / json; charset=UTF-8',
+                cache: false,
+                dataType: 'json'
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        deleteSubCategoryModal.modal('hide');
+                        toastr.success('SubCategory Deleted Successfully!');
+                        location.reload(); //reloading the page
+                    }
+                    else {
+                        toastr.error('Error: Deleting SubCategory!');
+                    }
+                });
+        }
+        //#endregion delete SubCategory
+
+        //Using Datatable
+        $(document).ready(function () {
+            $(document).ready(function () {
+                $('.table').DataTable();
+            });
+        });
+
+    </script>
+}

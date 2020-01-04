@@ -1,0 +1,66 @@
+﻿@model IEnumerable<MyCafe.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-primary"><strong>List of Users</strong></h4>
+        </div>
+    </div>
+    <table class="table table-bordered table-striped table-hover" id="mytable">
+        <thead>
+            <tr class="table-primary">
+                <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+                <th>@Html.DisplayNameFor(model => model.LastName)</th>
+                <th>@Html.DisplayNameFor(model => model.Email)</th>
+                <th>@Html.DisplayNameFor(model => model.PhoneNumber)</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.LastName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-square"><i class="fas fa-edit"></i>&nbsp;Edit</a>
+                        @if (item.LockoutEnd > DateTime.Now)
+                        {
+                            <a asp-action="UnLockUser" asp-route-id="@item.Id" class="btn btn-warning btn-square"><i class="fas fa-user-unlock"></i>&nbsp;UnLock User</a>
+                        }
+                        else
+                        {
+                            <a asp-action="LockUser" asp-route-id="@item.Id" class="btn btn-danger btn-square"><i class="fas fa-user-lock"></i>&nbsp;Lock User</a>
+                        }
+                        @*@if (item.EmailConfirmed)
+                            {
+                                //If the email is confirmed
+                                <a asp-action="ConfirmUser" asp-route-id="@item.Id" class="btn btn-success btn-square disabled"><i class="fas fa-check-square"></i>&nbsp;Confirmed</a>
+                            }
+                            else
+                            {
+                                //If the email is not confirm
+                                <a asp-action="ConfirmUser" asp-route-id="@item.Id" class="btn btn-primary btn-square"><i class="fas fa-check-square"></i>&nbsp;Confirm</a>
+                            }*@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+            $('#mytable').DataTable();
+        });
+    });
+</script>

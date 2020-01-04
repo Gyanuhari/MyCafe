@@ -1,0 +1,89 @@
+﻿@model MyCafe.Models.MenuItemViewModels.MenuItemVM
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <div class="form-group row">
+        <div class="col-12 offset-1 text-center">
+            <h4 class="text-primary"><strong>Delete&nbsp;@Model.MenuItem.Name</strong></h4>
+        </div>
+    </div>
+    <form method="post" asp-action="Delete">
+        <div class="row">
+            <div class="col-12 col-md-7">
+
+                <fieldset disabled>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="MenuItem.Id" />
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.Name"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="MenuItem.Name" class="form-control" placeholder="Enter Name of MenuItems" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.Price"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="MenuItem.Price" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.CategoryId"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="MenuItem.Category.Name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.SubCategoryId"></label>
+                        </div>
+                        <div class="col-8">
+                            <input asp-for="MenuItem.SubCategory.Name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.Description"></label>
+                        </div>
+                        <div class="col-8">
+                            <textarea asp-for="MenuItem.Description" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-4 text-right">
+                            <label asp-for="MenuItem.Spicyness"></label>
+                        </div>
+                        <div class="col-8">
+                            <select asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()" class="form-control"><option>--- Please Select Spicy----</option></select>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-group row">
+                    <div class="col-6 col-md-5 offset-md-2 text-right">
+                        <input type="submit" value="Delete" class="btn btn-danger btn-lg btn-square form-control" />
+                    </div>
+                    <div class="col-6 col-md-5">
+                        <a asp-action="Index" class="btn btn-success btn-square btn-lg form-control">To MenuItems</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-5">
+                <img src="@Model.MenuItem.Image" style="width:100%; border-radius:0px;" />
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

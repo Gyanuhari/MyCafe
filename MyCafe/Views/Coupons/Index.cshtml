@@ -1,0 +1,70 @@
+﻿@model IEnumerable<MyCafe.Models.Coupons>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <div class="row">
+        <div class="col-6">
+            <h4 class="text-primary"><strong>List of Coupons</strong></h4>
+        </div>
+        <div class="col-6 text-right">
+            @Html.Partial("_CreateNewPartial")
+        </div>
+    </div>
+    <table class="table table-bordered table-striped table-hover" id="mytable">
+        <thead>
+            <tr class="table-primary">
+                <th>@Html.DisplayNameFor(m => m.Name)</th>
+                <th>@Html.DisplayNameFor(m => m.Discount)</th>
+                <th>@Html.DisplayNameFor(m => m.MinimumAmount)</th>
+                <th>@Html.DisplayNameFor(m => m.IsActive)</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+
+                    @if (Convert.ToInt32(item.CouponType) == 0)
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.Discount)%</td>
+                    }
+                    else
+                    {
+                        <td>$@Html.DisplayFor(modelItem => item.Discount)</td>
+                    }
+
+                    <td>$@Html.DisplayFor(modelItem => item.MinimumAmount)</td>
+
+                    @if (item.IsActive == true)
+                    {
+                        <td>Active</td>
+                    }
+                    else
+                    {
+                        <td>Not Active</td>
+                    }
+                    @*<td>@Html.DisplayFor(modelItem => item.IsActive.)</td>*@
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><i class="far fa-edit"></i>&nbsp;Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="far fa-trash-alt"></i>&nbsp;Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+            $('#mytable').DataTable();
+        });
+    });
+</script>

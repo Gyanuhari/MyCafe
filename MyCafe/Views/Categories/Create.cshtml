@@ -1,0 +1,47 @@
+﻿@model MyCafe.Models.Category
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<br />
+<div class="backgroundWhite border">
+    <form asp-action="Create" method="post">
+        <div class="col offset-md-3"><h4 class="text-info">Create Category</h4></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="Name"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="DisplayOrder"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="DisplayOrder" class="form-control" />
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-6 col-md-3 offset-md-3">
+                <input type="submit" class="btn btn-lg btn-primary form-control" />
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-lg btn-success form-control" asp-action="Index">To Category List</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

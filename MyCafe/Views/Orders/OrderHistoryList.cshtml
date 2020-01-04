@@ -1,0 +1,208 @@
+﻿@model MyCafe.Models.OrderViewModels.OrderDownloadVM
+<div class="backgroundWhite border">
+    <form method="post" action="DownLoadHistory">
+        <div class="form-group row">
+            <div class="col-5">
+                <input asp-for="FromDate" id="fromDate" type="text" class="form-control" placeholder="From..." />
+            </div>
+            <div class="col-5">
+                <input asp-for="ToDate" id="toDate" type="text" class="form-control" placeholder="To..." />
+            </div>
+            <div class="col-2">
+                <a href="#" id="searchBtn" class="btn btn-primary form-control"><i class="fas fa-search">&nbsp;Search</i></a>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered" id="orderHistorytbl" style="width:100%">
+            <thead>
+                <tr class="table-primary">
+                    <th>OrderHeaderId</th>
+                    <th>Menu Id</th>
+                    <th>Menu Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="orderHistorytblbody"></tbody>
+        </table>
+        <div class="row">
+            <div class="col-md-2">
+                <button type="submit" id="downOrderHistoryBtn" class="btn btn-primary btn-square" onclick="downloadHistory()"><i class="fas fa-file-download"></i>&nbsp;Download</button>
+            </div>
+            <div class="col-md-10 text-right" id="paginationId">
+                @*Pagination Link*@
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        //Some global variables
+        var orderDetailResponseList = null;
+        var itemPerPage = 20;
+        var totalItem = null;
+        var totalPage = null;
+
+        $(document).ready(function () {
+            var startDate = null;
+            var endDate = null;
+
+            getOrderDetailsHistory(startDate, endDate);
+        });
+      
+        //Function for loading data
+        function getOrderDetailsHistory(startDate, endDate) {
+            var isOk = false;
+            var response = null;
+            var error = null;
+
+            var getOrderHistoryUrl = '/api/OrderHistoryAPI';
+
+            $.ajax({
+                url: getOrderHistoryUrl,
+                type: 'GET',
+                data: { fromDate: startDate, toDate: endDate },
+                cache: false,
+                contentType: 'application/json; charset=UTF-8',
+                dataType: 'json'
+            })
+                .done(function (res) {
+                    response = res;
+                    isOk = true;
+                })
+                .fail(function (err) {
+                    error = err;
+                })
+                .always(function () {
+                    if (isOk) {
+                        //console.info(response);
+                        orderDetailResponseList = response;
+                        if (response.orderDetailList.length == 0) {
+                            $('#orderHistorytblbody').empty();
+                            $('#paginationId').empty();
+                            toastr.info('No data are available.');
+                            $("<a class='btn btn-primary border' href='#'>1</a>").appendTo("#paginationId");
+                            $('#downOrderHistoryBtn').hide();
+                        }
+                        else {
+                            //Appending table with data
+                            appendDataToTable(1);
+                            //Add pagination to table
+                            createPagination();
+                            //Adding btn-primary class to highlight the first page
+                            $("#page1").addClass('btn-primary');
+                            $('#downOrderHistoryBtn').show();
+                        }
+                    }
+                    else {
+                        toastr.error('Error: loading data!!!');
+                        console.error('Error Message:' + error);
+                    }
+                });
+            }
+
+        //Create Pagination Definition
+        function createPagination() {
+            totalItem = orderDetailResponseList.orderDetailList.length;
+            totalPage = totalItem / itemPerPage;
+            totalPage = totalItem % itemPerPage == 0 ? totalPage : totalPage + 1;
+            $('#paginationId').empty();
+            for (var i = 1; i < totalPage; i++) {
+                //create Page Link
+                $("<a class='btn btn-default border' href='#' id='page" + i + "' onClick='appendDataToTable(" + i + ")'>" + i + "</a>").appendTo("#paginationId");
+            }
+            //Adding class to the clicked link to highlight the page
+            $("#paginationId a").click(function (e) {
+                $("#paginationId a").removeClass("btn-primary");
+                $(this).addClass("btn-primary");
+                e.preventDefault();
+            });
+        }
+
+        //Append Data To Table Definition
+        function appendDataToTable(a) {
+            var orderDetail = orderDetailResponseList.orderDetailList;
+            //console.info(a);
+            $('#orderHistorytblbody').empty();
+            for (var j = (a - 1) * itemPerPage; j < (a * itemPerPage); j++) {
+                //Append data to the table.
+                $("<tr><td>" + orderDetail[j].orderHeaderId + "</td><td>" + orderDetail[j].menuItemId + "</td><td>" + orderDetail[j].menuName + "</td><td>" + orderDetail[j].price + "</td><td>" + orderDetail[j].menuCount + "</td></tr>").appendTo("#orderHistorytblbody");
+            }
+            return;
+        }
+
+
+        //Disabling the dates based on previous selections
+        $(function () {
+            var dateFormat = "dd/mm/yy",
+                from = $("#fromDate")
+                    .datepicker({
+                        dateFormat: 'dd/mm/yy',
+                        defaultDate:"-1w",
+                        changeMonth: true,
+                        changeYear: true,
+                        maxDate: "+0D"
+                    })
+                    .on("change", function () {
+                        to.datepicker("option", "minDate", getDate(this));
+                    }),
+                to = $("#toDate").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    defaultDate: "+1w",
+                    changeMonth: true,
+                    changeYear: true,
+                    maxDate: "+0D"
+                })
+                    .on("change", function () {
+                        from.datepicker("option", "maxDate", getDate(this));
+                    });
+            function getDate(element) {
+                var date;
+                try {
+                    date = $.datepicker.parseDate(dateFormat, element.value);
+                } catch (error) {
+                    date = null;
+                }
+                return date;
+            }
+        });
+
+        //Loading data based on fromDate and toDate
+        $("#searchBtn").click(function () {
+            var startDate = $("#fromDate").val();
+            var endDate = $("#toDate").val();
+            //console.info(JSON.stringify(startDate));
+            if (startDate != "" && endDate != "") {
+                getOrderDetailsHistory(startDate, endDate);
+            }
+            else {
+                toastr.error('Error: Please enter date!');
+            }
+        });
+
+        //Alerting when particular date is not selected for downloading order hitory
+        $("#downOrderHistoryBtn").click(function () {
+            var startDate = $("#fromDate").val();
+            var endDate = $("#toDate").val();
+            if (startDate == "" || endDate == "") {
+                alert('Please Select Date!!!');
+                /*toastr.info('Please select date!')*/;
+            }
+        });
+
+        //$("#downOrderHistoryBtn").hide();
+
+        //$('#fromDate').on('keyup', function () {
+        //    var showBtn = true;
+        //    // Check all inputs
+        //    $('#fromDate').each(function () {
+        //        showBtn = showBtn && ($(this).val() !== "");
+        //        showBtn = showBtn && ($('#toDate').val() !== "");
+        //    })
+        //    // Hide or show the button according to the boolean value
+        //    $("#downOrderHistoryBtn").toggle(showBtn);
+        //});
+    </script>
+}

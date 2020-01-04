@@ -1,0 +1,110 @@
+﻿@model MyCafe.Models.OrderViewModels.OrderListVM
+@{
+    ViewData["Title"] = "CustomerOrderHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite">
+    @if (Model.OrderHeadersList.Count > 0)
+    {
+        <h4 class="text-primary"><strong>My Order History</strong></h4>
+        @*Need to work on search by: active orders, completed orders, cancelled orders*@
+        @foreach (var orderHeader in Model.OrderHeadersList)
+        {
+            //'#008cba'
+            <div class="backgroundWhite border" style="background-color:powderblue" onmouseover="$(this).css('background-color', 'CadetBlue');" onmouseleave="$(this).css('background-color', 'powderblue');">
+                <div class=" form-group row">
+                    <div class="col-12">
+                        <div class="text-white badge badge-primary"><h6>Order Id: <strong>@orderHeader.Id</strong></h6></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <ul class="list-group text-primary">
+                            <li class="list-group-item d-flex justify-content-between align-items-center mb-n3">
+                                <h4 class="text-primary"><strong>Ordered Items</strong></h4>
+                            </li>
+                            @foreach (var item in Model.OrderDetailsList.Where(o => o.OrderHeaderId.Equals(orderHeader.Id)))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>@item.MenuName:</strong>
+                                    <span class="badge badge-primary badge-pill">@item.MenuCount </span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-lg-8 col-md-8 pt-2 border backgroundWhite" style="border-radius:0px;">
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Pick Up By:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                @orderHeader.Name
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Pickup Time:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                @orderHeader.PickupTime   @*Note:orderHeader.OrderDate.ToShortDateString(): Gives Date of order & ToShortTimeString(): Gives order time*@
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Coupon:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                @if (orderHeader.CouponCode == null)
+                                {
+                                    <p>No Coupon was used</p>
+                                }
+                                else
+                                {
+                                    @orderHeader.CouponCode
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Status:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                @orderHeader.Status
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Comments:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                @orderHeader.Comments
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-right text-primary">
+                                <label>Total Price:</label>
+                            </div>
+                            <div class="col-8 text-primary">
+                                $@orderHeader.OrderTotal
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="backgroundWhite border">
+            <p><h4 class="text-primary">No orders has been made so far......</h4></p>
+        </div>
+    }
+
+    <div paging-model="@Model.PagingInfo" page-action="CustomerOrderHistory" page-classes-enabled="true" page-class="page-link btn-lg border"
+         page-class-selected="btn-primary active" page-class-normal="btn-default" class="pagination float-right p-1" style="background-color:powderblue"></div>
+</div>
+
+
+
+

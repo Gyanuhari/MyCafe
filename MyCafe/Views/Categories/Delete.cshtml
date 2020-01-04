@@ -1,0 +1,85 @@
+﻿@model MyCafe.Models.Category
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="backgroundWhite border">
+    <fieldset disabled>
+        <div class="row">
+            <div class="col-6 offset-md-3 text-info">
+                <h4>Category</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="Name"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="Name" class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="DisplayOrder"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="DisplayOrder" class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4 col-md-2 offset-md-1 text-right">
+                <label asp-for="CreatedAt"></label>
+            </div>
+            <div class="col-8 col-md-6">
+                <input asp-for="CreatedAt" class="form-control disabled" />
+            </div>
+        </div>
+    </fieldset>
+    <br />
+    <form method="post" asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <div class="col-6 col-md-3 offset-md-3">
+                <input type="submit" value="Delete" class="btn btn-square btn-lg btn-danger form-control" />
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="btn btn-success btn-square btn-lg form-control" asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*<script>
+    function Delete() {
+        swal({
+            title: "Are you sure want to Delete?",
+            text: "You will not be able to restore the file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: true
+        }, function () {
+            $.ajax({
+                type: 'DELETE',
+                url: '/categories/Delete',
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        dataTable.ajax.reload();
+
+                    }
+                    else {
+                        toastr.error(data.message);
+                    }
+                }
+            });
+        });
+
+
+    }
+
+</script>*@

@@ -1,0 +1,77 @@
+﻿@model MyCafe.Models.CartViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form method="post">
+    <div class="backgroundWhite border" style="background-color: rgba(243, 246, 248, 0.90)">
+        @{double total = 0; }
+        @if (Model.CartMenuList.Count > 0)
+        {
+            <div class="card">
+                <div class="card-header bg-dark">
+                    <div class="row">
+                        <div class="col-md-6 text-white"><i class="fas fa-shopping-cart">&nbsp; Shopping Cart</i></div>
+                        <div class="col-12 col-md-4 offset-md-2">
+                            <a class="btn btn-outline-info btn-square form-control" asp-area="Customer" asp-controller="Home" asp-action="Index">To Menu</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.CartMenuList)
+                    {
+                        <div class="row" onmouseover="$(this).css('background-color', 'powderblue');" onmouseleave="$(this).css('background-color', 'white');" >
+                            <div class="col-md-2">
+                                <img src="@item.MenuItem.Image" class="p-2" style="width:100%;" />
+                            </div>
+                            <div class="col-12 col-md-10">
+                                <div class="row pt-3">
+                                    <div class="col-6">
+                                        <h4 class="text-info"><b>@item.MenuItem.Name</b></h4>
+                                        <b class="text-dark">Type:</b>&nbsp;@item.MenuItem.SubCategory.Name<br />
+                                        <b class="text-dark">Price Per Service:</b>&nbsp;$@item.MenuItem.Price<br />
+                                        <b class="text-dark">Quantity:</b>&nbsp;@item.MenuCount<br />
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row pt-3">
+                                            <div class="col-4 text-left pt-2">
+                                                <b class="text-danger">$@(item.MenuCount * item.MenuItem.Price)</b>
+                                            </div>
+                                            @{ total += item.MenuCount * item.MenuItem.Price;}
+                                            <div class="col-8 text-center">
+                                                <a class="btn btn-outline-primary" asp-action="IncreaseItem" asp-route-menuId="@item.MenuItemId"><i class="fas fa-plus"></i></a>
+                                                <button class="btn btn-outline-primary" type="submit" asp-action="DecreaseItem" asp-route-menuId="@item.MenuItemId"><i class="fas fa-minus"></i></button>
+                                                <button class="btn btn-outline-danger" type="submit" asp-action="RemoveItem" asp-route-menuId="@item.MenuItemId"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    }
+                    <div class="row">
+                        <div class="col-11 text-success text-right"><strong>Total(AUD):&nbsp;&nbsp;$@total</strong></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-md-4 offset-md-8">
+                            <a class="btn btn-success btn-square form-control text-white" asp-controller="Carts" asp-action="Summary">Order Summary</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-info">
+                <h4>There are no items in the cart...</h4>
+            </div>
+        }
+    </div>
+</form>
+
+<script type="text/javascript">
+</script>
+

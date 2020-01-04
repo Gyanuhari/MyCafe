@@ -1,0 +1,163 @@
+﻿@using MyCafe.Extensions
+@using MyCafe.Utility
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MyCafe</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link href="~/css/Typeahead.css" rel="stylesheet" />  @*for bloodbound typeahead*@
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+        @*Jquerytimepicker*@
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.css" />
+
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link href="~/css/Typeahead.css" rel="stylesheet" />  @*for bloodbound typeahead*@
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+        @*Jquerytimepicker*@
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.min.css" />
+    </environment>
+    @*<link rel="stylesheet" href="~/css/site.css" />*@
+</head>
+<body>
+    <header>
+        @*<div class="jumbotron top-page-contact">
+                <div class="container">
+                </div>
+            </div>*@
+        <nav class="navbar navbar-expand-lg navbar-default" style="height:60px;">
+
+        </nav>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">MyCafe</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse show" id="navbarColor01">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (User.IsInRole(SD.AdminEndUser) || User.IsInRole(SD.StaffEndUser) || User.IsInRole(SD.CustomerEndUser))
+                        {
+                            //Customer Can See their Order History
+                            <li class="nav-item active">
+                                <a class="nav-link" asp-action="CustomerOrderHistory" asp-controller="Orders">Order History</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.AdminEndUser))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" data-toggle="dropdown" id="navbarDropDown" role="button" aria-haspopup="false" aria-expanded="true">Admin</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDown">
+                                    <a class="dropdown-item" asp-controller="Categories" asp-action="Index">Category</a>
+                                    <a class="dropdown-item" asp-controller="SubCategories" asp-action="Index">SubCategory</a>
+                                    <a class="dropdown-item" asp-controller="MenuItems" asp-action="Index">Menu Items</a>
+                                    <a class="dropdown-item" asp-controller="Coupons" asp-action="Index">Coupons</a>
+                                    <a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a>
+                                </div>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(SD.AdminEndUser)||User.IsInRole(SD.StaffEndUser))
+                        { 
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" data-toggle="dropdown" id="navbarDropDown" role="button" aria-haspopup="false" aria-expanded="true">Order</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDown">
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="ManageOrder">Manage Order</a>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="OrderPickUp">Order Pickup</a>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="Index">Order History</a>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="OrderHistoryList">Download Order Details</a>
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.AdminEndUser) || User.IsInRole(SD.StaffEndUser)|| User.IsInRole(SD.CustomerEndUser))
+                        {
+                            @if (HttpContextAccessor.HttpContext.Session.GetObject<List<int>>(SD.SessionCart) != null)
+                            {
+                                {
+                                    var count = HttpContextAccessor.HttpContext.Session.GetObject<List<int>>(SD.SessionCart).Count();
+
+                                    <li class="nav-item active" style="color:white">
+                                        <a asp-action="Index" asp-controller="Carts" class="nav-link"><i class="fas fa-shopping-cart"></i>(@count)</a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="nav-item active" style="color:white">
+                                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i>(0)</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    @await Html.PartialAsync("_LoginPartial")
+                </div>
+                @*<div class="form-inline">
+                    @await Html.PartialAsync("_LoginPartial")
+                </div>*@
+            </div>
+        </nav>
+    </header>
+    <div class="container my-2">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - Hari Tandan
+        </div>
+    </footer>
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/2.9.0/jquery.serializejson.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+        <script src="https://kit.fontawesome.com/e19c476714.js"></script>
+        @*Jquerytimepicker*@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/2.9.0/jquery.serializejson.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+        <script src="https://kit.fontawesome.com/e19c476714.js"></script>
+    </environment>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @*<script type="text/javascript">
+            $("li").hover(function () {
+                $(this).css("color", "blue");
+            });
+        </script>*@
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

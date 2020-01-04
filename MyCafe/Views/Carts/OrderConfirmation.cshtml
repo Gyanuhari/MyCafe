@@ -1,0 +1,17 @@
+﻿@model int
+@{
+    ViewData["Title"] = "OrderConfirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class=" row" >
+    <div class="col-lg-8 offset-lg-2 backgroundWhite" style="background-image: url('~/wwwroot/images/orderplacedimage.png'); width:100%;">
+        <h4 class="text-info text-center"><strong>Your order has been placed successfully.....</strong></h4>
+        <p class="text-center">
+            Thank you for placing the order.<br />
+            Your order Id: <strong class="text-primary">@Model</strong><br />
+            Our staff will contact you when your order is ready for pick up.
+        </p>
+    </div>
+</div>
+

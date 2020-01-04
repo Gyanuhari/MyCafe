@@ -1,0 +1,80 @@
+﻿@model MyCafe.Models.Coupons
+@{
+    ViewData["Title"] = "Create Coupons";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite border">
+    <form method="post"  asp-action="Create" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-12 col-md-8 offset-md-2">
+                <di class="form-group row">
+                    <div class="col-12 text-center">
+                        <h4 class="text-primary"><strong>Ceate Coupons</strong></h4>
+                    </div>
+                </di>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="Name"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="Picture"></label>
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" asp-for="Picture" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="CouponType"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="CouponType" asp-items="Html.GetEnumSelectList<Coupons.ECouponType>()" class="form-control" ><option>--- Please Select CouponType ---</option></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="Discount"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Discount" class="form-control" />
+                        <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="MinimumAmount"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MinimumAmount" class="form-control" />
+                        <span asp-validation-for="MinimumAmount" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 text-right">
+                        <label asp-for="IsActive"></label>
+                    </div>
+                    <div class="col-8">
+                        <input type="checkbox" asp-for="IsActive" style="height:30px; width:30px;"/>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-6 text-right">
+                        <input type="submit" value="Create" class="btn btn-primary btn-square btn-lg form-control" />
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-success btn-square btn-lg form-control">To Coupons</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
