@@ -92,25 +92,13 @@ namespace MyCafe.Controllers
             {
                 var userId = ((ClaimsIdentity)this.User.Identity).FindFirst(ClaimTypes.NameIdentifier).Value;
                 CartMenuItem cartMenuItemFromDb = await _context.CartMenuItems.Where(c => c.MenuItemId == menuId && c.ApplicationUserId == userId).FirstOrDefaultAsync();
-                if (cartMenuItemFromDb.MenuCount == 1)
+                //Decrease only if the menu item is greater than 1
+                if (cartMenuItemFromDb.MenuCount > 1)
                 {
-                    //If count is 1 then remove the item in decrement
-                    //_context.CartMenuItems.Remove(cartMenuItemFromDb);
-                    //List<int> sessionList = new List<int>();
-                    //sessionList=HttpContext.Session.GetObject<List<int>>(SD.SessionCart);
-                    //sessionList.Remove(menuId);
-                    //HttpContext.Session.SetObject(SD.SessionCart, sessionList);
-
-                    //If count is 1 then do nothing
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    //Decrease if count is more than 1
                     cartMenuItemFromDb.MenuCount = cartMenuItemFromDb.MenuCount - 1;
                     _context.Update(cartMenuItemFromDb);
-                }
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }              
             }
             return RedirectToAction(nameof(Index));
         }
